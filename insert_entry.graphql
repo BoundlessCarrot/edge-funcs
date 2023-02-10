@@ -1,0 +1,10 @@
+mutation InsertEntry {
+    insert_entries(
+        objects: [(url: url, hash: hash, isCompleted: false)]
+    ) {
+        returning {
+            hash
+            isCompleted
+        }
+    }
+}
