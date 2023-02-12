@@ -1,10 +1,10 @@
-mutation InsertEntry {
-    insert_entries(
-        objects: [(url: url, hash: hash, isCompleted: false)]
-    ) {
-        returning {
-            hash
-            isCompleted
-        }
+mutation InsertEntry ($url, $hash) {
+  insert_entries(url, hash)(
+    objects: [(url: url, hash: hash)]
+  ) {
+      returning {
+        hash
+        isCompleted
+      }
     }
 }

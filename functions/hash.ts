@@ -8,6 +8,19 @@ export default (req: Request, res: Response) => {
 
     // graphql stuff here maybe?
 
+    const response = await fetch("https://skgjjokqnhwykfrwrlcn.hasura.eu-central-1.nhost.run/v1/graphql", {
+      method: 'POST',
+      body: JSON.stringify({
+        mutation insertEntries($hash: String!, $url: String!) {
+          insert_url_shortener(objects: {hash: $hash, url: $url}) {
+            returning {
+              hash
+            }
+          }
+        }
+      })
+    })
+
     res.status(200).send(`jstr.dev/${hash}`)
 }
 
