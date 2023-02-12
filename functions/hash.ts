@@ -2,8 +2,7 @@ import { Request, Response } from 'express'
 import crypto from 'crypto'
 import graphql from 'graphql'
 
-async function insertEntry() {  
-  export default (req: Request, res: Response) => {
+async function insertEntry(req: Request, res: Response) {  
     const url = Buffer.from(JSON.stringify(req.body));
     const hash = crypto.createHash('sha1').update(url).digest('hex');
 
@@ -27,7 +26,6 @@ async function insertEntry() {
     });
 
     res.status(200).send(`jstr.dev/${hash}`);
-  }
 }
 
 insertEntry();
