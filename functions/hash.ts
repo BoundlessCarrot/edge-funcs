@@ -1,31 +1,39 @@
 import { Request, Response } from 'express'
 import crypto from 'crypto'
-import graphql from 'graphql'
+import { Resolver, Mutation, Arg, Query, InputType, Field, ObjectType, ResolverInterface } from "type-graphql";
 
-async function insertEntry(req: Request, res: Response) {  
-    const url = Buffer.from(JSON.stringify(req.body));
-    const hash = crypto.createHash('sha1').update(url).digest('hex');
+@ObjectType({description: "Shortened URL type"})
+export class ShortUrl {
+  @Field()
+  url: string;
 
-    // graphql stuff here maybe?
-
-    const response = await fetch("https://skgjjokqnhwykfrwrlcn.hasura.eu-central-1.nhost.run/v1/graphql", {
-      method: 'POST',
-      body: JSON.stringify({
-        mutation insertEntries($hash: String!, $url: String!) {
-          insert_url_shortener(objects: {hash: $hash, url: $url}) {
-            returning {
-              hash
-            }
-          }
-        }
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-
-    res.status(200).send(`jstr.dev/${hash}`);
+  @Field()
+  hash: string;
 }
 
-insertEntry();
+@InputType()
+export class UrlInput implements ShortUrl {
+  @Field()
+  url: string;
+
+  @Field()
+  hash: string;
+}
+
+@Resolver(of => ShortUrl)
+export class ShortUrlResolver implements ResolverInterface<ShortUrl> {
+  url = Buffer.from(JSON.stringify(req.body));
+  hash = crypto.createHash('sha1').update(this.url).digest('hex');
+
+  @Mutation(returns => ShortUrl)
+  async addUrl(@Arg("input") urlinput: UrlInput): Promise<ShortUrl> {  
+    const input = Object.assign(new ShortUrl(), {
+      url: urlinput.url,
+      hash: urlinput.hash
+    });
+
+    //return stuff here
+
+    // res.status(200).send(`jstr.dev/${this.hash}`);
+  }
+}
